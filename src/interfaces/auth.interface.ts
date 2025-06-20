@@ -28,6 +28,10 @@ export interface ResetPasswordBody {
     password:string
 }
 
+export interface ChangePasswordBody {
+    password:string
+}
+
 export interface AuthRequest extends Request {
     userId?: number;
     token?:string
