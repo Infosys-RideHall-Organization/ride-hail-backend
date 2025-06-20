@@ -2,6 +2,10 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
+    profileImage: {
+        data: Buffer,
+        contentType: String,
+    },
     name: {
         type: String,
         required: true,
@@ -12,6 +16,12 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
         maxlength: 255,
+    },
+    gender:{
+        type: String,
+        required: false,
+        enum: ["Male", "Female","Other","Not Specified"],
+        default: "Not Specified",
     },
     password: {
         type: String,
@@ -44,6 +54,13 @@ const userSchema = new mongoose.Schema({
     verificationTokenExpiresAt: {
         type: Date,
     },
+    role: {
+        type: String,
+        enum: ["user", "driver"],
+        default: "user",
+    },
+    playerId: { type: String },
+
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
 });
