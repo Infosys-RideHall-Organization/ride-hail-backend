@@ -79,162 +79,6 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
 </html>
 `;
 
-
-export const RESET_PASSWORD_REQUEST_EMAIL_TEMPLATE = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Reset Your Password</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f3f3f3;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 30px auto;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-    .header {
-      background: linear-gradient(to right, #00a5c3, #31c6e2);
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 24px;
-    }
-    .content {
-      padding: 30px;
-      color: #333;
-    }
-    .token-box {
-      background: #00a5c3;
-      color: white;
-      font-size: 22px; /* Reduced size */
-      font-weight: bold;
-      padding: 10px 20px;
-      border-radius: 6px;
-      display: inline-block;
-      letter-spacing: 4px;
-      margin: 20px 0;
-    }
-    .footer {
-      background: #fafafa;
-      padding: 20px;
-      text-align: center;
-      font-size: 12px;
-      color: #777;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">Password Reset Request</div>
-    <div class="content">
-      <p>Hello,</p>
-      <p>We received a password reset request for your RideHail account.</p>
-      <p>Your reset code is:</p>
-      <div style="text-align: center;">
-        <div class="token-box">{resetPasswordToken}</div>
-      </div>
-      <p>This code will expire in 15 minutes.</p>
-      <p>If you didn’t request this, you can ignore this email.</p>
-      <p style="margin-top: 25px;">Best regards,<br><strong>RideHail Team</strong></p>
-    </div>
-    <div class="footer">
-      <p>This is an automated message. Please do not reply.</p>
-      <p>&copy; ${new Date().getFullYear()} RideHail</p>
-    </div>
-  </div>
-</body>
-</html>
-`;
-
-
-export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Password Reset Successful</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      background-color: #ffffff;
-      margin: 40px auto;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-      background: linear-gradient(to right, #00a5c3, #31c6e2);
-      color: white;
-      padding: 30px;
-      font-size: 22px;
-      text-align: center;
-    }
-    .content {
-      padding: 30px;
-      font-size: 16px;
-      color: #333;
-    }
-    .success-icon {
-      font-size: 48px;
-      color: white;
-      background-color: #00a5c3;
-      border-radius: 50%;
-      padding: 15px;
-      display: inline-block;
-      margin-bottom: 20px;
-    }
-    .security-tips {
-      margin-top: 20px;
-      background-color: #f0f8ff;
-      padding: 15px;
-      border-left: 4px solid #00a5c3;
-    }
-    .footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 12px;
-      background-color: #f9f9f9;
-      color: #777;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">Password Reset Successful</div>
-    <div class="content" style="text-align: center;">
-      <div class="success-icon">✔</div>
-      <p>Your password has been reset successfully for your RideHail account.</p>
-      <div class="security-tips">
-        <p><strong>Security Tip:</strong> If you didn’t perform this action, please secure your account immediately by contacting our support team.</p>
-      </div>
-      <p style="margin-top: 20px;">Best regards,<br><strong>RideHail Team</strong></p>
-    </div>
-    <div class="footer">
-      <p>This is an automated message. Please do not reply.</p>
-      <p>&copy; ${new Date().getFullYear()} RideHail App</p>
-    </div>
-  </div>
-</body>
-</html>
-`;
-
 export const VERIFICATION_EMAIL_SUCCESS_TEMPLATE = `
 <!DOCTYPE html>
 <html lang="en">
@@ -314,3 +158,159 @@ export const VERIFICATION_EMAIL_SUCCESS_TEMPLATE = `
 </body>
 </html>
 `;
+
+export const RESET_PASSWORD_REQUEST_EMAIL_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reset Your Password</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(to right, #00a5c3, #31c6e2);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+    }
+    .content {
+      padding: 30px;
+      color: #333;
+    }
+    .token-box {
+      background: #00a5c3;
+      color: white;
+      font-size: 22px; /* Reduced size */
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 6px;
+      display: inline-block;
+      letter-spacing: 4px;
+      margin: 20px 0;
+    }
+    .footer {
+      background: #fafafa;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Password Reset Request</div>
+    <div class="content">
+      <p>Hello,</p>
+      <p>We received a password reset request for your RideHail account.</p>
+      <p>Your reset code is:</p>
+      <div style="text-align: center;">
+        <div class="token-box">{resetPasswordToken}</div>
+      </div>
+      <p>This code will expire in 15 minutes.</p>
+      <p>If you didn’t request this, you can ignore this email.</p>
+      <p style="margin-top: 25px;">Best regards,<br><strong>RideHail Team</strong></p>
+    </div>
+    <div class="footer">
+      <p>This is an automated message. Please do not reply.</p>
+      <p>&copy; ${new Date().getFullYear()} RideHail</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Reset Successful</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      background-color: #ffffff;
+      margin: 40px auto;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      background: linear-gradient(to right, #00a5c3, #31c6e2);
+      color: white;
+      padding: 30px;
+      font-size: 22px;
+      text-align: center;
+    }
+    .content {
+      padding: 30px;
+      font-size: 16px;
+      color: #333;
+    }
+    .success-icon {
+      font-size: 48px;
+      color: white;
+      background-color: #00a5c3;
+      border-radius: 50%;
+      padding: 15px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    .security-tips {
+      margin-top: 20px;
+      background-color: #f0f8ff;
+      padding: 15px;
+      border-left: 4px solid #00a5c3;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      background-color: #f9f9f9;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Password Reset Successful</div>
+    <div class="content" style="text-align: center;">
+      <div class="success-icon">✔</div>
+      <p>Your password has been reset successfully for your RideHail account.</p>
+      <div class="security-tips">
+        <p><strong>Security Tip:</strong> If you didn’t perform this action, please secure your account immediately by contacting our support team.</p>
+      </div>
+      <p style="margin-top: 20px;">Best regards,<br><strong>RideHail Team</strong></p>
+    </div>
+    <div class="footer">
+      <p>This is an automated message. Please do not reply.</p>
+      <p>&copy; ${new Date().getFullYear()} RideHail App</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+
