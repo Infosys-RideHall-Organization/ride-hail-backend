@@ -1,36 +1,30 @@
-import express from "express";
+// server.ts
+import http from "http";
+import app from "./app";
 import dotenv from "dotenv";
-import morgan from "morgan";
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
-import authRouter from "./routes/auth.route";
-import {errorHandler} from "./utils/error-handler";
-import './db';
+import { initSocket } from "./socket";
 
 dotenv.config();
-const app = express();
 
-// middlewares
-app.use(errorHandler);
-app.use(morgan("dev"));
-app.use(bodyParser.json());
-app.use(cookieParser());
+const server = http.createServer(app);
+const io = initSocket(server);
 
-// Root health check
-app.get("/", (_req, res) => {
-    res.status(200).json({
-        service: "RideHail API",
-        status: "OK",
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime().toFixed(2) + "s",
+app.set("io", io);
+
+// check socket status
+app.get("/api/test/socket", (req, res) => {
+    const io = req.app.get("io");
+    io.emit("test-event", {
+        message: "testing",
     });
+    res.json({
+        success:true,
+       message: "Socket.IO event emitted!"
+        });
 });
 
 
-//routes
-app.use('/api/auth', authRouter);
-
-app.listen(process.env.PORT, () => {
-    console.log("Server listening on port: " + process.env.PORT);
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
-
