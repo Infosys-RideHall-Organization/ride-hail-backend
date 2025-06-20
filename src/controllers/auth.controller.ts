@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import { isEmail, isStrongPassword } from 'validator';
-
+import {OAuth2Client, TokenPayload} from 'google-auth-library';
 import {
-    AuthRequest,
+    AuthRequest, ChangePasswordBody,
     ForgotPasswordBody,
     ResetPasswordBody,
     SignInBody,
@@ -14,7 +14,7 @@ import {
 } from "../interfaces/auth.interface";
 
 import User from "../db/schema/user.schema";
-import { generateEmailToken } from "../utils/generate-email-token";
+import { generateFourDigitOtp } from "../utils/generate-four-digit-otp";
 import { generateTokenAndSetCookie } from "../utils/generate-token-and-set-cookie";
 import {
     sendPasswordResetEmail,
@@ -24,6 +24,62 @@ import {
 } from "../services/mail/emails";
 
 dotenv.config();
+
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const googleSignIn = async (req: Request, res: Response): Promise<void> => {
+    const { idToken } = req.body as { idToken: string };
+
+    if (!idToken) {
+        res.status(400).json({ success: false, message: "ID token is required" });
+        return;
+    }
+
+    console.log(idToken);
+
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken,
+            audience: process.env.GOOGLE_CLIENT_ID!,
+        });
+        const payload = ticket.getPayload();
+
+
+        if (!payload || !payload.email || !payload.name) {
+            res.status(400).json({success: false, message: "Invalid Google payload"});
+            return;
+        }
+
+        const {email, name,picture} = payload as TokenPayload;
+
+        let user = await User.findOne({email});
+
+        if (!user) {
+            user = new User({
+                name,
+                email,
+                profileImage:picture,
+                password: "GOOGLE_AUTH", // or undefined if you update schema
+                isVerified: true,
+            });
+            await sendWelcomeEmail(user.email, user.name);
+        }
+
+        user.lastLogin = new Date();
+        await user.save();
+
+        const token = generateTokenAndSetCookie(res, user._id.toString());
+
+        res.status(200).header("x-auth-token", token).json({
+            success: true,
+            message: "Signed in Successfully!",
+            ...user.toObject(),
+            password: undefined,
+        });
+    }catch(err) {
+    }
+}
 
 export const signUp = async (req: Request<{}, {}, SignUpBody>, res: Response) => {
     try {
@@ -62,7 +118,7 @@ export const signUp = async (req: Request<{}, {}, SignUpBody>, res: Response) =>
         }
 
         const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT_FACTOR));
-        const verificationToken = generateEmailToken();
+        const verificationToken = generateFourDigitOtp();
         const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
         const newUser = await User.create({
@@ -73,10 +129,9 @@ export const signUp = async (req: Request<{}, {}, SignUpBody>, res: Response) =>
             verificationTokenExpiresAt,
         });
 
-        const token = generateTokenAndSetCookie(res, newUser._id.toString());
         await sendVerificationEmail(newUser.email, verificationToken);
 
-        res.status(201).header("x-auth-token", token).json({
+        res.status(201).json({
             success: true,
             message: "Signed Up Successfully!",
             ...newUser.toObject(),
@@ -173,7 +228,7 @@ export const forgotPassword = async (req: Request<{}, {}, ForgotPasswordBody>, r
              return;
         }
 
-        user.resetPasswordToken = generateEmailToken();
+        user.resetPasswordToken = generateFourDigitOtp();
         user.resetPasswordExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
         await user.save();
 
@@ -263,6 +318,45 @@ export const resetPassword = async (req: Request<{}, {}, ResetPasswordBody>, res
     }
 };
 
+export const resetPasswordWithId = async (req: Request<{id:string}, {}, ChangePasswordBody>, res: Response) => {
+    try {
+        const userId = req.params.id;
+        const { password } = req.body;
+
+        if (!password || !userId) {
+            res.status(400).json({ success: false, error: "Invalid Credentials!" });
+            return;
+        }
+
+        if (!isStrongPassword(password, {
+            minLength: 8,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 1,
+        })) {
+            res.status(400).json({
+                success: false,
+                error: "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+            });
+            return;
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            res.status(400).json({ success: false, error: "Something went wrong, try again." });
+            return;
+        }
+
+        user.password = await bcrypt.hash(password, Number(process.env.SALT_FACTOR));
+        await user.save();
+        res.status(200).json({ success: true, message: "Password reset successful!"});
+    } catch (error) {
+        console.error("Reset password error:", error);
+        res.status(500).json({ success: false, error: "Something went wrong. Please try again." });
+    }
+};
+
 export const checkAuth = async (req: AuthRequest, res: Response) => {
     try {
         const user = await User.findById(req.userId);
@@ -287,9 +381,12 @@ export const checkAuth = async (req: AuthRequest, res: Response) => {
 export const signOut = async (_req: Request, res: Response) => {
     try {
         res.clearCookie("token");
+        res.removeHeader('x-auth-token');
         res.status(200).json({ success: true, message: "Signed out successfully!" });
     } catch (error) {
         console.error("Sign out error:", error);
         res.status(500).json({ success: false, error: "Something went wrong. Please try again." });
     }
 };
+
+
